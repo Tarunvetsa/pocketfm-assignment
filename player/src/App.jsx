@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import AudioPlayer from './Components/audio/Audioplayer.jsx';
-import VideoPlayer from './Components/Videoplayer.jsx';
+import VideoPlayer from './Components/Video/Videoplayer.jsx';
 
 function App() {
   const [url, setUrl] = useState('');
@@ -24,7 +24,7 @@ function App() {
         break;
       case 'mp4':
       case 'webm':
-      // case 'ogg': // Handle ogg format for video as well
+        // case 'ogg': // Handle ogg format for video as well
         setMediaType('video');
         break;
       default:
