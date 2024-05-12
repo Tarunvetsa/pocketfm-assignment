@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import AudioPlayer from './Components/Audioplayer.jsx';
+import AudioPlayer from './Components/audio/Audioplayer.jsx';
 import VideoPlayer from './Components/Videoplayer.jsx';
 
 function App() {

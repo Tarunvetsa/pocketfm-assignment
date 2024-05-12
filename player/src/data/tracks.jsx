@@ -25,4 +25,11 @@ export const tracks = [
         author: 'Vetsa Tarun',
       //   thumbnail: "xyz",
       },
+    
+      {
+        title: 'Baby Calm Down',
+        src: 'https://www.youtube.com/watch?v=WcIcVapfqXw',
+        author: 'Vetsa Tarun',
+      //   thumbnail: "xyz",
+      },
   ];

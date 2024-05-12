@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import AudioPlayer from './Components/Audioplayer'
+import AudioPlayer from './Components/audio/Audioplayer'
 import './styles/index.css'
 import './styles/customize-progress-bar.css';
 
