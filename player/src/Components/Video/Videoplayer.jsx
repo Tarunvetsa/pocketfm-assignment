@@ -1,31 +1,33 @@
 /* eslint-disable no-unused-vars */
 import { useRef, useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import ReactPlayer from 'react-player';
-import { tracks } from '../../data/tracks'; // Importing tracks from data
+import AudioPlayer from '../audio/Audioplayer';
+import tracks from '../../data/tracks'; // Import tracks data
+import {
+  IoPlayBackSharp,
+  IoPlayForwardSharp,
+  IoPlaySkipBackSharp,
+  IoPlaySkipForwardSharp,
+  IoPlaySharp,
+  IoPauseSharp,
+} from 'react-icons/io5';
 import './Control.css';
 
-const CustomVideoPlayer = () => {
+const VideoPlayer = ({ trackIndex, setTrackIndex }) => {
+  const playerRef = useRef();
   const [playing, setPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5);
   const [muted, setMuted] = useState(false);
   const [playbackRate, setPlaybackRate] = useState(1);
-  const [progressInterval, setProgressInterval] = useState(1000);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const [currentTrackIndex, setCurrentTrackIndex] = useState(0); // Track index state
-  const playerRef = useRef();
 
   useEffect(() => {
     if (playerRef.current) {
       setDuration(playerRef.current.getDuration());
     }
   }, [playerRef.current]);
-
-  // Function to play the next track
-  const playNextTrack = () => {
-    const nextTrackIndex = (currentTrackIndex + 1) % tracks.length; // Get next track index
-    setCurrentTrackIndex(nextTrackIndex); // Update current track index
-  };
 
   const handlePlayPause = () => {
     setPlaying(!playing);
@@ -51,54 +53,76 @@ const CustomVideoPlayer = () => {
     setCurrentTime(state.playedSeconds);
   };
 
+  const handleSeekForward = () => {
+    playerRef.current.seekTo(currentTime + 10);
+  };
+
+  const handleSeekBackward = () => {
+    playerRef.current.seekTo(currentTime - 10);
+  };
+
+  const handleNextTrack = () => {
+    if (trackIndex + 1 < tracks.length) {
+      setTrackIndex(trackIndex + 1);
+    } else {
+      setTrackIndex(0);
+    }
+  };
+
+  const currentTrack = tracks[trackIndex];
+  const isVideo = currentTrack.src.includes('youtube.com/watch');
+
   return (
-    <div className="custom-video-player">
-      <ReactPlayer
-        ref={playerRef}
-        url={tracks[currentTrackIndex].src} // Set URL from current track
-        playing={playing}
-        volume={volume}
-        muted={muted}
-        playbackRate={playbackRate}
-        progressInterval={progressInterval}
-        width="100%"
-        height="97vh"
-        onProgress={handleProgress}
-        onDuration={setDuration}
-        onEnded={playNextTrack} // Play next track when current track ends
-      />
-      <div className="controls">
-        <button onClick={handlePlayPause}>{playing ? '❚❚' : '▶'}</button>
-        <button onClick={handleStop}>↺</button>
-        <button onClick={() => setCurrentTime(currentTime - 10)}>◄◄</button>
-        <button onClick={() => setCurrentTime(currentTime + 10)}>►►</button>
-        <button onClick={playNextTrack}>▶|</button> {/* Next button */}
-        <div className="volume-control">
-          <button onClick={() => setMuted(!muted)}>{muted ? '🔇' : '🔊'}</button>
-          <input
-            type="range"
-            min={0}
-            max={1}
-            step={0.01}
-            value={volume}
-            onChange={handleVolumeChange}
-          />
-          <select value={playbackRate} onChange={handlePlaybackRateChange}>
-            <option value={1}>1x</option>
-            <option value={1.5}>1.5x</option>
-            <option value={2}>2x</option>
-          </select>
-        </div>
-      </div>
-      <div className="progress-bar-container">
-        <progress
-          className="progress-bar"
-          value={currentTime}
-          max={duration}
+    <div className="video-player">
+      {isVideo ? (
+        <ReactPlayer
+          ref={playerRef}
+          url={currentTrack.src}
+          playing={playing}
+          volume={volume}
+          muted={muted}
+          playbackRate={playbackRate}
+          width="100%"
+          height="100vh"
+          onProgress={handleProgress}
+          onDuration={setDuration}
+          onEnded={handleNextTrack}
         />
-        <div className="time-progress">
-          {formatTime(currentTime)} / {formatTime(duration)}
-        </div>
+      ) : (
+        <AudioPlayer />
+      )}
+
+      <div className="controls">
+        {isVideo ? (
+          <>
+            <button onClick={handlePlayPause}>{playing ? <IoPauseSharp /> : <IoPlaySharp />}</button>
+            <button onClick={handleStop}><IoPlayBackSharp /></button>
+            <button onClick={handleSeekBackward}><IoPlaySkipBackSharp /></button>
+            <button onClick={handleSeekForward}><IoPlayForwardSharp /></button>
+            <button onClick={handleNextTrack}><IoPlaySkipForwardSharp /></button>
+            <div className="volume-control">
+              <button onClick={() => setMuted(!muted)}>{muted ? '🔇' : '🔊'}</button>
+              <input
+                type="range"
+                min={0}
+                max={1}
+                step={0.01}
+                value={volume}
+                onChange={handleVolumeChange}
+              />
+              <select value={playbackRate} onChange={handlePlaybackRateChange}>
+                <option value={0.5}>0.5x</option>
+                <option value={0.75}>0.75x</option>
+                <option value={1}>1x (Normal)</option>
+                <option value={1.25}>1.25x</option>
+                <option value={1.5}>1.5x</option>
+                <option value={2}>2x</option>
+                <option value={3}>3x</option>
+                <option value={4}>4x</option>
+              </select>
+            </div>
+          </>
+        ) : null}
       </div>
     </div>
   );
@@ -110,4 +134,10 @@ const formatTime = (time) => {
   return `${minutes < 10 ? '0' : ''}${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 };
 
-export default CustomVideoPlayer;
+// Prop types validation
+VideoPlayer.propTypes = {
+  trackIndex: PropTypes.number.isRequired,
+  setTrackIndex: PropTypes.func.isRequired,
+};
+
+export default VideoPlayer;

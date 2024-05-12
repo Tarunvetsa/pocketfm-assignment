@@ -1,6 +1,6 @@
 import { useRef, useState } from 'react';
-import { tracks } from '../../data/tracks.jsx';
-import VideoPlayer from '../Video/Videoplayer.jsx'; // import VideoPlayer component
+import VideoPlayer from '../Video/Videoplayer.jsx'; // Import VideoPlayer component
+import { tracks } from '../../data/tracks.jsx'; // Import tracks data
 
 // import components
 import DisplayTrack from './DisplayTrack';
@@ -10,9 +10,7 @@ import ProgressBar from './ProgressBar';
 const AudioPlayer = () => {
   // states
   const [trackIndex, setTrackIndex] = useState(0);
-  const [currentTrack, setCurrentTrack] = useState(
-    tracks[trackIndex]
-  );
+  const [currentTrack, setCurrentTrack] = useState(tracks[trackIndex]);
   const [timeProgress, setTimeProgress] = useState(0);
   const [duration, setDuration] = useState(0);
 
@@ -36,7 +34,8 @@ const AudioPlayer = () => {
   return (
     <>
       {isVideo ? (
-        <VideoPlayer />
+        // Pass the video URL and track index props to the VideoPlayer component
+        <VideoPlayer videoUrl={currentTrack.src} trackIndex={trackIndex} setTrackIndex={setTrackIndex} />
       ) : (
         <div className="audio-player">
           <div className="inner">

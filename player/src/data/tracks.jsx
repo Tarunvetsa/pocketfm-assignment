@@ -32,4 +32,12 @@ export const tracks = [
         author: 'Vetsa Tarun',
       //   thumbnail: "xyz",
       },
+      {
+        title: 'RRR trailer',
+        src: 'https://www.youtube.com/watch?v=NgBoMJy386M',
+        author: 'Vetsa Tarun',
+      //   thumbnail: "xyz",
+      },
   ];
+  
+export default tracks
