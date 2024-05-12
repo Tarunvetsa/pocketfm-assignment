@@ -11,6 +11,9 @@ import {
   IoPlaySkipForwardSharp,
   IoPlaySharp,
   IoPauseSharp,
+  IoCloseSharp,
+  IoExpandSharp,
+  IoContractSharp
 } from 'react-icons/io5';
 import './Control.css';
 
@@ -22,6 +25,7 @@ const VideoPlayer = ({ trackIndex, setTrackIndex }) => {
   const [playbackRate, setPlaybackRate] = useState(1);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [minimized, setMinimized] = useState(false);
 
   useEffect(() => {
     if (playerRef.current) {
@@ -75,25 +79,32 @@ const VideoPlayer = ({ trackIndex, setTrackIndex }) => {
   return (
     <div className="video-player">
       {isVideo ? (
-        <ReactPlayer
-          ref={playerRef}
-          url={currentTrack.src}
-          playing={playing}
-          volume={volume}
-          muted={muted}
-          playbackRate={playbackRate}
-          width="100%"
-          height="100vh"
-          onProgress={handleProgress}
-          onDuration={setDuration}
-          onEnded={handleNextTrack}
-        />
+        <>
+          <ReactPlayer
+            ref={playerRef}
+            url={currentTrack.src}
+            playing={playing}
+            volume={volume}
+            muted={muted}
+            playbackRate={playbackRate}
+            width={minimized ? '300px' : '100%'}
+            height={minimized ? '169px' : '100vh'}
+            onProgress={handleProgress}
+            onDuration={setDuration}
+            onEnded={handleNextTrack}
+          />
+          {!minimized && (
+            <button className="minimize-btn" onClick={() => setMinimized(true)}>
+              <IoContractSharp />
+            </button>
+          )}
+        </>
       ) : (
         <AudioPlayer />
       )}
 
-      <div className="controls">
-        {isVideo ? (
+      <div className={`controls ${minimized ? 'minimized' : ''}`}>
+        {!minimized && (
           <>
             <button onClick={handlePlayPause}>{playing ? <IoPauseSharp /> : <IoPlaySharp />}</button>
             <button onClick={handleStop}><IoPlayBackSharp /></button>
@@ -122,8 +133,21 @@ const VideoPlayer = ({ trackIndex, setTrackIndex }) => {
               </select>
             </div>
           </>
-        ) : null}
+        )}
+        {isVideo && minimized && (
+          <div className="minimized-controls">
+            <button onClick={() => setMinimized(false)}><IoExpandSharp /></button>
+            <button onClick={handleNextTrack}><IoPlaySkipForwardSharp /></button>
+            <button onClick={() => setMinimized(false)}><IoCloseSharp /></button>
+          </div>
+        )}
       </div>
+      {isVideo && !minimized && (
+        <div className="progress-bar-container">
+          <progress className="progress-bar" max={duration} value={currentTime}></progress>
+          <div className="time-progress">{formatTime(currentTime)} / {formatTime(duration)}</div>
+        </div>
+      )}
     </div>
   );
 };
